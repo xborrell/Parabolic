@@ -71,7 +71,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EcuacionesTest.cs" />
+    <Compile Include="SegmentDangleShould.cs" />
+    <Compile Include="EcuacionesShould.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -79,6 +80,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ParabolicTools\ParabolicTools.csproj">
+      <Project>{c5f16cee-3495-4f0e-a694-3de95416a594}</Project>
+      <Name>ParabolicTools</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Parabolic\Parabolic.csproj">
       <Project>{2a55446f-d763-47b3-bfcd-0a3b2e12d535}</Project>
       <Name>Parabolic</Name>

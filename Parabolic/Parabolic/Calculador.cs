@@ -18,14 +18,14 @@ namespace Parabolic
             do
             {
                 CalcularNovaPosicio(roca);
-                temps -= Constantes.FixedDeltaTime;
+                temps -= Constants.FixedDeltaTime;
 
                 if( temps <= 0)
                 {
                     temps += interval;
                 }
 
-            } while (roca.Posicio.Length() >= Constantes.EarthRadius);
+            } while (roca.Posicio.Length() >= Constants.EarthRadius);
         }
 
 
@@ -34,8 +34,8 @@ namespace Parabolic
             var fuerzaGravitatoria = CalcularForçaGravitatoria(roca);
             var aceleracionGravitatoria = fuerzaGravitatoria / roca.Masa;
 
-            roca.Velocitat += aceleracionGravitatoria * Constantes.FixedDeltaTime;
-            var desplaçament = roca.Velocitat * Constantes.FixedDeltaTime;
+            roca.Velocitat += aceleracionGravitatoria * Constants.FixedDeltaTime;
+            var desplaçament = roca.Velocitat * Constants.FixedDeltaTime;
             roca.Posicio += desplaçament;
         }
 
@@ -50,10 +50,10 @@ namespace Parabolic
 
         public float CalcularAtraccioTerrestre(Roca roca)
         {
-            var M = Constantes.EarthMass;
+            var M = Constants.EarthMass;
             var m = roca.Masa;
             var r = roca.Posicio.Length();
-            var G = Constantes.ConstanteGravitacionUniversal;
+            var G = Constants.ConstanteGravitacionUniversal;
 
             var F = G * M * m / Math.Pow(r, 2);
 

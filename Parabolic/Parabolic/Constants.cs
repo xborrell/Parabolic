@@ -2,7 +2,7 @@
 
 namespace Parabolic
 {
-    public static class Constantes
+    public static class Constants
     {
         public const float EarthRadius = 6378280F;    // Radio de la tierra en metros
         public const float EarthMass = 5.974E24F;     // masa de la tierra en kilos

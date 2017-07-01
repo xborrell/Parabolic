@@ -32,7 +32,7 @@ namespace Parabolic
 
             if( d1 == d2 )
             {
-                return VelocitatInicial.CompareTo(other.VelocitatInicial) * -1;
+                return VelocitatInicial.CompareTo(other.VelocitatInicial);
             }
 
             return Distancia.CompareTo(other.Distancia);
@@ -40,14 +40,14 @@ namespace Parabolic
 
         public override string ToString()
         {
-            var angleEnGraus = Constantes.RadianToDegreeCoeficient * Angle;
+            var angleEnGraus = Constants.RadianToDegreeCoeficient * Angle;
             var signe = Sentit > 0 ? '-' : '+';
             return $"Amb angle {angleEnGraus}º i una velocitat inicial de {VelocitatInicial} m/s cau a {signe}{Distancia} metres.";
         }
 
         private void CalcularDistancia()
         {
-            var posicioInicial = new Vector3(0, Constantes.EarthRadius, 0);
+            var posicioInicial = new Vector3(0, Constants.EarthRadius, 0);
 
             var roca = new Roca()
             {
