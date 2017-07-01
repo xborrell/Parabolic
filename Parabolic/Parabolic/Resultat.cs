@@ -11,36 +11,38 @@ namespace Parabolic
     {
         const int MasaDeLaRoca = 1;
         const int DistanciaACubrir = 1151000; // distancia a Breda en metres
-        const float offsetAcceptable = 100F;
         private static Calculador calculador = new Calculador();
 
         public float Angle { get; private set; }
-        public float Força { get; private set; }
+        public float VelocitatInicial { get; private set; }
         public float Distancia { get; private set; }
         public int Sentit { get; private set; }
 
         public Resultat(float angle, float força)
         {
             Angle = angle;
-            Força = força;
+            VelocitatInicial = força;
             CalcularDistancia();
         }
 
         public int CompareTo(Resultat other)
         {
-            var offset = Math.Abs(Distancia - other.Distancia);
-            if (offset >= offsetAcceptable)
+            var d1 = (int)Math.Round(Distancia, 0);
+            var d2 = (int)Math.Round(other.Distancia, 0);
+
+            if( d1 == d2 )
             {
-                return Math.Abs(Distancia).CompareTo(Math.Abs(other.Distancia));
+                return VelocitatInicial.CompareTo(other.VelocitatInicial) * -1;
             }
 
-            return Força.CompareTo(other.Força) * -1;
+            return Distancia.CompareTo(other.Distancia);
         }
 
         public override string ToString()
         {
             var angleEnGraus = Constantes.RadianToDegreeCoeficient * Angle;
-            return $"Amb angle {angleEnGraus}º i una velocitat inicial de {Força} m/s cau a {Distancia} metres.";
+            var signe = Sentit > 0 ? '-' : '+';
+            return $"Amb angle {angleEnGraus}º i una velocitat inicial de {VelocitatInicial} m/s cau a {signe}{Distancia} metres.";
         }
 
         private void CalcularDistancia()
@@ -50,7 +52,7 @@ namespace Parabolic
             var roca = new Roca()
             {
                 Posicio = posicioInicial,
-                Velocitat = new Vector3(Força * (float)Math.Cos(Angle), Força * (float)Math.Sin(Angle), 0),
+                Velocitat = new Vector3(VelocitatInicial * (float)Math.Cos(Angle), VelocitatInicial * (float)Math.Sin(Angle), 0),
                 Masa = MasaDeLaRoca
             };
 
@@ -58,7 +60,7 @@ namespace Parabolic
 
             var distanciaObtinguda = (int)Math.Round((roca.Posicio - posicioInicial).Length());
             Distancia = Math.Abs(DistanciaACubrir - distanciaObtinguda);
-            Sentit = (int)(( DistanciaACubrir - distanciaObtinguda) / Distancia);
+            Sentit = (int)((DistanciaACubrir - distanciaObtinguda) / Distancia);
         }
     }
 }

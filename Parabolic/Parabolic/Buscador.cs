@@ -11,39 +11,66 @@ namespace Parabolic
     {
         const int DistanciaACubrir = 1151000; // distancia a Breda en metres
 
-        public float angle { get; private set; } = Constantes.DegreeToRadianCoeficient * 45; // en radians
-        public float força { get; private set; } = 0; // modulo del vector velocidad
         private Calculador calculador = new Calculador();
 
         public void Executar()
         {
-            AproximaUnaForça();
+            var resultat = BuscarVelocitatPerUnAngle(Constantes.DegreeToRadianCoeficient * 45);
+
+            Console.WriteLine();
+            Console.WriteLine(resultat.ToString());
+
         }
 
-        private void AproximaUnaForça()
+        private Resultat BuscarVelocitatPerUnAngle(float angleEnProva)
         {
-            var incrementDeForça = 1000F;
-            var ultimaForça = 0F;
-            var ultimResultat = new Resultat(angle, ultimaForça);
+            var incrementDeVelocitat = 1000F;
+            var velocitatEnProva = 0F;
+            var millorResultatObtingut = new Resultat(angleEnProva, velocitatEnProva);
 
-            while (ultimResultat.Distancia > 1000)
+            while (Math.Abs(incrementDeVelocitat) > 0.001)
             {
-                ultimaForça += incrementDeForça;
+                velocitatEnProva += incrementDeVelocitat;
 
-                var resultatObtingut = new Resultat(angle, ultimaForça);
+                var resultatEnProva = new Resultat(angleEnProva, velocitatEnProva);
 
-                Console.WriteLine(resultatObtingut.ToString());
+                MostraResultat(millorResultatObtingut, resultatEnProva, incrementDeVelocitat);
 
-                if (resultatObtingut.CompareTo( ultimResultat ) > 0)
+                if (MilloremElResultat(millorResultatObtingut, resultatEnProva))
                 {
-                    incrementDeForça *= -0.5F;
+                    millorResultatObtingut = resultatEnProva;
                 }
                 else
                 {
-                    força = ultimaForça;
+                    incrementDeVelocitat = AfinarElIncrement(millorResultatObtingut, incrementDeVelocitat);
+                    velocitatEnProva = millorResultatObtingut.VelocitatInicial;
                 }
-                ultimResultat = resultatObtingut;
             }
+
+            return millorResultatObtingut;
+        }
+
+        private void MostraResultat(Resultat millorResultatObtingut, Resultat resultatEnProva, float i)
+        {
+            var esMillor = MilloremElResultat(millorResultatObtingut, resultatEnProva) ? '*' : ' ';
+            var angleEnGraus = Constantes.RadianToDegreeCoeficient * resultatEnProva.Angle;
+            var n = resultatEnProva.Sentit > 0 ? -resultatEnProva.Distancia : resultatEnProva.Distancia;
+            Console.WriteLine($"{esMillor} A={angleEnGraus,3}º, V={resultatEnProva.VelocitatInicial,8:0.000} m/s, D={n,13:n} m., I={i,10:0.00000}");
+        }
+
+        private bool MilloremElResultat(Resultat guardat, Resultat nou)
+        {
+            return (guardat.CompareTo(nou) > 0);
+        }
+
+        private float AfinarElIncrement(Resultat millorResultat, float incrementAnterior)
+        {
+            return Math.Abs(incrementAnterior) * 0.5F * millorResultat.Sentit;
+        }
+
+        private float CalculaNovaVelocitat(float velocitat, float increment)
+        {
+            return (float)Math.Round( velocitat + increment, 3 );
         }
     }
 }
