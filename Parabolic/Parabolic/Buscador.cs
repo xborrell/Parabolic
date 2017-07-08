@@ -18,85 +18,108 @@ namespace Parabolic
         public Buscador()
         {
             this.logger = LogManager.GetLogger(this.GetType());
-
         }
 
         public void Executar()
         {
-            var resultat = RefinarAngle();
+            var millorResultat = RefinarAngle();
 
-            logger.Info(resultat.ToString());
+            logger.Info("-".PadRight( 79, '-' ));
+            logger.Info(millorResultat.ToString());
         }
 
         public Resultat RefinarAngle()
         {
-            var angles = new SegmentDangles(0, 90, 10);
+            var millorResultat = new Resultat(0, 0);
+            var angles = SegmentDangles.CreaEnGraus(0, 90);
 
-            Resultat millorResultat = null;
+            while( true )
+            {
+                var resultatObtingut = BuscarAngles(angles);
 
-            millorResultat = BuscarAngles(angles);
-            angles = angles.ZoomEnRadians(millorResultat.Angle);
+                if (MilloremElResultat(millorResultat, resultatObtingut))
+                {
+                    millorResultat = resultatObtingut;
+                }
 
-            return millorResultat;
+                if (angles.CanZoom())
+                {
+                    angles = angles.Zoom(millorResultat.Angle);
+                } else
+                {
+                    return millorResultat;
+                }
+            }
         }
 
         private Resultat BuscarAngles(SegmentDangles angles)
         {
-            Resultat millorResultatObtingut = null;
+            logger.Info($"Comprobant el segment [{angles.AngleInicial * Constants.RadianToDegreeCoeficient}, {angles.AngleFinal * Constants.RadianToDegreeCoeficient}]");
+            var millorResultatPerAquestSegment = new Resultat(angles.AngleInicial, 0);
 
-            foreach(var angleAProbar in angles.EnRadians() )
+            foreach (var angleAProbar in angles.EnRadians() )
             {
-                var resultatEnProva = BuscarVelocitatPerUnAngle(angleAProbar);
+                var resultatObtingut = BuscarVelocitatPerUnAngle(angleAProbar);
 
-                if (millorResultatObtingut == null || MilloremElResultat(millorResultatObtingut, resultatEnProva))
+                if( MilloremElResultat(millorResultatPerAquestSegment, resultatObtingut) )
                 {
-                    millorResultatObtingut = resultatEnProva;
-                    logger.Info(millorResultatObtingut.ToString());
+                    millorResultatPerAquestSegment = resultatObtingut;
                 }
             }
 
-            return millorResultatObtingut;
+            logger.Info($"Millor resultat pel segment [{angles.AngleInicial * Constants.RadianToDegreeCoeficient}, {angles.AngleFinal * Constants.RadianToDegreeCoeficient}] = {millorResultatPerAquestSegment.ToString()}");
+
+            return millorResultatPerAquestSegment;
         }
 
         private Resultat BuscarVelocitatPerUnAngle(float angleEnProva)
         {
+            logger.Debug($"Comprobant angle {angleEnProva * Constants.RadianToDegreeCoeficient}");
+
             var incrementDeVelocitat = 1000F;
             var velocitatEnProva = 0F;
-            var millorResultatObtingut = new Resultat(angleEnProva, velocitatEnProva);
+            var millorResultatPerAquestAngle = new Resultat(angleEnProva, 0);
 
-            while ((millorResultatObtingut.Distancia > 0) && (Math.Abs(incrementDeVelocitat) > 0.001))
+            while (Math.Abs(incrementDeVelocitat) > 0.001)
             {
                 velocitatEnProva += incrementDeVelocitat;
 
                 var resultatEnProva = new Resultat(angleEnProva, velocitatEnProva);
 
-                MostraResultat(millorResultatObtingut, resultatEnProva, incrementDeVelocitat);
+                MostraResultat(millorResultatPerAquestAngle, resultatEnProva, incrementDeVelocitat);
 
-                if (MilloremElResultat(millorResultatObtingut, resultatEnProva))
+                if (MilloremElResultat(millorResultatPerAquestAngle, resultatEnProva))
                 {
-                    millorResultatObtingut = resultatEnProva;
+                    millorResultatPerAquestAngle = resultatEnProva;
                 }
                 else
                 {
-                    incrementDeVelocitat = AfinarElIncrement(millorResultatObtingut, incrementDeVelocitat);
-                    velocitatEnProva = millorResultatObtingut.VelocitatInicial;
+                    incrementDeVelocitat = AfinarElIncrement(millorResultatPerAquestAngle, incrementDeVelocitat);
+                    velocitatEnProva = millorResultatPerAquestAngle.VelocitatInicial;
+                }
+
+                if(millorResultatPerAquestAngle.Distancia == 0 )
+                {
+                    break;
                 }
             }
 
-            return millorResultatObtingut;
+            logger.Debug(millorResultatPerAquestAngle.ToString());
+
+            return millorResultatPerAquestAngle;
         }
 
-        private void MostraResultat(Resultat millorResultatObtingut, Resultat resultatEnProva, float i)
+        private void MostraResultat(Resultat millorResultatPerAquestAngle, Resultat resultatEnProva, float i)
         {
-            var esMillor = MilloremElResultat(millorResultatObtingut, resultatEnProva) ? '*' : ' ';
+            var esMillor = MilloremElResultat(millorResultatPerAquestAngle, resultatEnProva) ? '*' : ' ';
             var angleEnGraus = Constants.RadianToDegreeCoeficient * resultatEnProva.Angle;
             var n = resultatEnProva.Sentit > 0 ? -resultatEnProva.Distancia : resultatEnProva.Distancia;
             logger.Debug($"{esMillor} A={angleEnGraus,3}º, V={resultatEnProva.VelocitatInicial,8:0.000} m/s, D={n,13:n} m., I={i,10:0.00000}");
         }
 
-        private bool MilloremElResultat(Resultat guardat, Resultat nou)
+        private bool MilloremElResultat(Resultat millorResultatPerAquestAngle, Resultat nou)
         {
-            return (guardat.CompareTo(nou) > 0);
+            return (millorResultatPerAquestAngle.CompareTo(nou) > 0);
         }
 
         private float AfinarElIncrement(Resultat millorResultat, float incrementAnterior)

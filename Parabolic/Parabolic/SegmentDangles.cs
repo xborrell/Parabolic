@@ -11,56 +11,85 @@ namespace Parabolic
 {
     public class SegmentDangles
     {
-        public float AngleInicialEnGraus { get { return AngleInicialEnRadians * Constants.RadianToDegreeCoeficient; } }
-        public float AngleFinalEnGraus { get { return AngleFinalEnRadians * Constants.RadianToDegreeCoeficient; } }
-        public float AngleInicialEnRadians { get; protected set; }
-        public float AngleFinalEnRadians { get; protected set; }
-        public int Passos { get; protected set; }
+        public const int Passos = 10;
+        public readonly float intervalMinim = 1E-3F * Constants.DegreeToRadianCoeficient;
 
-        public static SegmentDangles CreaEnRadians(float angleInicial, float angleFinal, int passos)
+        public float Interval { get { return (AngleFinal - AngleInicial) / (Passos - 1); } }
+
+        public float AngleInicial { get; protected set; }
+        public float AngleFinal { get; protected set; }
+
+        public static SegmentDangles CreaEnRadians(float angleInicial, float angleFinal)
         {
-            return new SegmentDangles(angleInicial, angleFinal, passos);
+            return new SegmentDangles(angleInicial, angleFinal);
         }
 
-        public static SegmentDangles CreaEnGraus(float angleInicial, float angleFinal, int passos)
+        public static SegmentDangles CreaEnGraus(float angleInicial, float angleFinal)
         {
             return CreaEnRadians(
                 Constants.DegreeToRadianCoeficient * angleInicial,
-                Constants.DegreeToRadianCoeficient * angleFinal,
-                passos
+                Constants.DegreeToRadianCoeficient * angleFinal
             );
         }
 
-        public SegmentDangles(float angleInicial, float angleFinal, int passos)
+        public SegmentDangles(float angleInicial, float angleFinal)
         {
-            AngleInicialEnRadians = Math.Min(angleInicial, angleFinal);
-            AngleFinalEnRadians = Math.Max(angleInicial, angleFinal);
-            Passos = passos;
+            AngleInicial = Math.Min(angleInicial, angleFinal);
+            AngleFinal = Math.Max(angleInicial, angleFinal);
         }
 
         public IEnumerable<float> EnRadians()
         {
-            return AmbPasos(AngleInicialEnRadians, AngleFinalEnRadians);
+            float angle = AngleInicial;
+
+            while (angle <= AngleFinal)
+            {
+                yield return angle;
+
+                angle += Interval;
+            }
+
+            if (angle - (Interval / 100) <= AngleFinal)
+            {
+                yield return angle;
+            }
         }
 
-        public IEnumerable<float> EnGrausAmbPasos(int pasos)
+        public bool CanZoom()
         {
-            return AmbPasos(AngleInicialEnGraus, AngleFinalEnGraus);
+            return (Interval >= intervalMinim);
         }
 
-        public SegmentDangles ZoomEnRadians(float puntDeZoom)
+        public SegmentDangles Zoom(float puntDeZoomEnRadians)
         {
-            if (puntDeZoom < AngleInicialEnRadians) throw new ArgumentException("El punt de zoom no pot ser inferior al angle inicial.");
-            if (puntDeZoom > AngleFinalEnRadians) throw new ArgumentException("El punt de zoom no pot ser superior al angle final.");
+            if (puntDeZoomEnRadians < AngleInicial) throw new ArgumentException("El punt de zoom no pot ser inferior al angle inicial.");
+            if (puntDeZoomEnRadians > AngleFinal) throw new ArgumentException("El punt de zoom no pot ser superior al angle final.");
 
-            var passosNous = Passos / 10;
-            float increment = (AngleInicialEnRadians - AngleFinalEnRadians) / (Passos - 1);
-            float nouIncrement = increment / 10;
+            if (!CanZoom()) throw new ArgumentException("No es soporta zoom per sota de milesimas de grau.");
+            var epsilon = Interval / 100;
 
-            float iniciPrevist = puntDeZoom - (nouIncrement * 4);
-            float fiPrevist = iniciPrevist + increment - nouIncrement;
+            var valorsActuals = new List<float>();
+            var indexDelZoom = -1;
+            var diferenciaDeZoom = float.MaxValue;
+            foreach (var valor in EnRadians())
+            {
+                var diferencia = Math.Abs(puntDeZoomEnRadians - valor);
+                if ( diferenciaDeZoom > diferencia)
+                {
+                    indexDelZoom = valorsActuals.Count;
+                    diferenciaDeZoom = diferencia;
+                }
 
-            return SegmentDangles.CreaEnRadians(iniciPrevist, fiPrevist, passosNous);
+                valorsActuals.Add(valor);
+            }
+
+            if (indexDelZoom == 0) indexDelZoom++;
+            if (indexDelZoom == valorsActuals.Count - 1) indexDelZoom--;
+
+            float iniciPrevist = valorsActuals[indexDelZoom - 1];
+            float fiPrevist = valorsActuals[indexDelZoom + 1];
+
+            return SegmentDangles.CreaEnRadians(iniciPrevist, fiPrevist);
         }
 
         public override bool Equals(object obj)
@@ -77,27 +106,9 @@ namespace Parabolic
                 return true;
             }
 
-            return AngleInicialEnRadians.AreEqualApproximately(other.AngleInicialEnRadians, 0.0001F)
-                && AngleFinalEnRadians.AreEqualApproximately(other.AngleFinalEnRadians, 0.0001F)
+            return AngleInicial.AreEqualApproximately(other.AngleInicial, 0.0001F)
+                && AngleFinal.AreEqualApproximately(other.AngleFinal, 0.0001F)
                 ;
-        }
-
-        private IEnumerable<float> AmbPasos(float inici, float final)
-        {
-            float angle = inici;
-            float increment = (final - inici) / (Passos - 1);
-
-            while (angle <= final)
-            {
-                yield return angle;
-
-                angle += increment;
-            }
-
-            if( angle - (increment / 100) <= final)
-            {
-                yield return angle;
-            }
         }
     }
 }

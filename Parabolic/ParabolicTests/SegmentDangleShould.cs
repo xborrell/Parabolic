@@ -18,7 +18,7 @@ namespace ParabolicTests
         public void ServeTheRightAnglesInRadiansWithTheServedSegmentAndIntervalWhen10StepsAreRequested(float inicial, float final, float increment)
         {
             // assign
-            var segment = SegmentDangles.CreaEnGraus(inicial, final, 10);
+            var segment = SegmentDangles.CreaEnGraus(inicial, final);
             var expectedList = new List<float>();
 
             for (var angle = inicial; angle <= final; angle += increment)
@@ -37,45 +37,16 @@ namespace ParabolicTests
             obtainedList.Should().Equal(expectedList, (left, right) => left.AreEqualApproximately(right, 0.01F));
         }
 
-        [Theory]
-        [InlineData(0F, 90F, 10F)]
-        [InlineData(45F, 54F, 1F)]
-        [InlineData(49.5F, 50.4F, 0.1F)]
-        [InlineData(49.95F, 50.04F, 0.01F)]
-        [InlineData(49.995F, 50.004F, 0.001F)]
-        [InlineData(49.9995F, 50.0004F, 0.0001F)]
-        public void ServeTheRightAnglesInDegreesWithTheServedSegmentAndIntervalWhen10StepsAreRequested(float inicial, float final, float increment)
-        {
-            // assign
-            var segment = SegmentDangles.CreaEnGraus(inicial, final, 10);
-            var expectedList = new List<float>();
-
-            for (var angle = inicial; angle <= final; angle += increment)
-            {
-                expectedList.Add(angle);
-            }
-
-            //action
-            var obtainedList = new List<float>();
-            foreach (var angle in segment.EnGrausAmbPasos(10))
-            {
-                obtainedList.Add(angle);
-            }
-
-            //assert
-            obtainedList.Should().Equal(expectedList, (left, right) => left.AreEqualApproximately(right, 0.01F));
-        }
-
         [Fact]
         public void ThrowExceptionWhenTheZoomPointIsLowerThanSegment()
         {
             // assign
-            var segment = SegmentDangles.CreaEnGraus(0, 90, 10);
+            var segment = SegmentDangles.CreaEnGraus(0, 90);
 
             //action
             Action zoom = () =>
             {
-                segment.ZoomEnRadians(-1 * Constants.DegreeToRadianCoeficient);
+                segment.Zoom(-1 * Constants.DegreeToRadianCoeficient);
             };
 
             //assert
@@ -86,61 +57,54 @@ namespace ParabolicTests
         public void ThrowExceptionWhenTheZoomPointIsGreaterThanSegment()
         {
             // assign
-            var segment = SegmentDangles.CreaEnGraus(0, 90, 10);
+            var segment = SegmentDangles.CreaEnGraus(0, 90);
 
             //action
             Action zoom = () =>
             {
-                segment.ZoomEnRadians(91 * Constants.DegreeToRadianCoeficient);
+                segment.Zoom(91 * Constants.DegreeToRadianCoeficient);
             };
 
             //assert
             zoom.ShouldThrow<ArgumentException>();
         }
 
-
-        //[InlineData(0F, 90F, 10F)]
-        //[InlineData(45F, 54F, 1F)]
-        //[InlineData(49.5F, 50.4F, 0.1F)]
-        //[InlineData(49.95F, 50.04F, 0.01F)]
-        //[InlineData(49.995F, 50.004F, 0.001F)]
-        //[InlineData(49.9995F, 50.0004F, 0.0001F)]
-
-
         [Theory]
-        [InlineData(0F, 90F, 50F, 45F, 54F)]
-        [InlineData(45F, 54F, 50F, 49.5F, 50.4F)]
-        [InlineData(49.5F, 50.4F, 50F, 49.95F, 50.04F)]
-        [InlineData(49.95F, 50.04F, 50F, 49.995F, 50.004F)]
-        [InlineData(49.995F, 50.004F, 50F, 49.9995F, 50.0004F)]
-        [InlineData(49.9995F, 50.0004F, 50F, 49.99995F, 50.00004F)]
-        public void ReturnANewSegmentWithTheZoomAndIntervalRequested(float inicial, float final, float puntDeZoom, float angleMinimPrevist, float angleMaximPrevist)
+        [InlineData(0F, 90F, 50F, 40F, 60F)]
+        [InlineData(45F, 54F, 50F, 49F, 51F)]
+        [InlineData(49.5F, 50.4F, 50F, 49.9F, 50.1F)]
+        [InlineData(49.95F, 50.04F, 50F, 49.99F, 50.01F)]
+        [InlineData(49.995F, 50.004F, 50F, 49.999F, 50.001F)]
+        [InlineData(0F, 90F, 0F, 0F, 20F)]
+        [InlineData(0F, 90F, 90F, 70F, 90F)]
+        public void ReturnANewSegmentWithTheZoomRequestedInRadians(float inicial, float final, float puntDeZoom, float angleMinimPrevist, float angleMaximPrevist)
         {
             // assign
-            const int passos = 10;
-            var segment = SegmentDangles.CreaEnGraus(inicial, final, passos);
-            var expectedSegment = SegmentDangles.CreaEnGraus(angleMinimPrevist, angleMaximPrevist, passos / 10);
+            var segment = SegmentDangles.CreaEnGraus(inicial, final);
+            var expectedSegment = SegmentDangles.CreaEnGraus(angleMinimPrevist, angleMaximPrevist);
 
             //action
-            var obtainedSegment = segment.ZoomEnRadians(puntDeZoom * Constants.DegreeToRadianCoeficient);
+            var obtainedSegment = segment.Zoom(puntDeZoom * Constants.DegreeToRadianCoeficient);
 
             //assert
             obtainedSegment.Should().Be(expectedSegment);
         }
 
-        //[Theory]
-        //[InlineData(45F, 35F, 55F)]
-        //public void ReturnANewSegmentWithTheZoomRequestedAndAAuthomaticInterval(float puntDeZoom, float angleMinimPrevist, float angleMaximPrevist)
-        //{
-        //    // assign
-        //    var segment = SegmentDangles.CreaEnGraus(0, 90, 10);
-        //    var expectedSegment = SegmentDangles.CreaEnGraus(angleMinimPrevist, angleMaximPrevist, 10);
+        [Theory]
+        [InlineData(49.9995F, 50.0004F, 50F)]
+        public void ThrowExceptionWhenTheZoomIsTooLittle(float inicial, float final, float puntDeZoom)
+        {
+            // assign
+            var segment = SegmentDangles.CreaEnGraus(inicial, final);
 
-        //    //action
-        //    var obtainedSegment = segment.ZoomEnRadians(puntDeZoom * Constants.DegreeToRadianCoeficient);
+            //action
+            Action zoom = () =>
+            {
+                segment.Zoom(puntDeZoom * Constants.DegreeToRadianCoeficient);
+            };
 
-        //    //assert
-        //    obtainedSegment.Should().Be(expectedSegment);
-        //}
+            //assert
+            zoom.ShouldThrow<ArgumentException>();
+        }
     }
 }
