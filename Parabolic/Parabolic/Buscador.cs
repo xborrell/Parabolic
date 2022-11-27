@@ -2,11 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Parabolic
+namespace Parabolic.Console
 {
     public class Buscador
     {
@@ -52,7 +51,7 @@ namespace Parabolic
             }
         }
 
-        private Resultat BuscarAngles(SegmentDangles angles)
+        public Resultat BuscarAngles(SegmentDangles angles)
         {
             logger.Info($"Comprobant el segment [{angles.AngleInicial * Constants.RadianToDegreeCoeficient}, {angles.AngleFinal * Constants.RadianToDegreeCoeficient}]");
             var millorResultatPerAquestSegment = new Resultat(angles.AngleInicial, 0);
@@ -72,15 +71,15 @@ namespace Parabolic
             return millorResultatPerAquestSegment;
         }
 
-        private Resultat BuscarVelocitatPerUnAngle(float angleEnProva)
+        public Resultat BuscarVelocitatPerUnAngle(double angleEnProva)
         {
             logger.Debug($"Comprobant angle {angleEnProva * Constants.RadianToDegreeCoeficient}");
 
-            var incrementDeVelocitat = 1000F;
-            var velocitatEnProva = 0F;
+            double incrementDeVelocitat = 1000;
+            double velocitatEnProva = 0;
             var millorResultatPerAquestAngle = new Resultat(angleEnProva, 0);
 
-            while (Math.Abs(incrementDeVelocitat) > 0.001)
+            while (Math.Abs(incrementDeVelocitat) > Constants.incrementMinimDeVelocitat)
             {
                 velocitatEnProva += incrementDeVelocitat;
 
@@ -109,7 +108,7 @@ namespace Parabolic
             return millorResultatPerAquestAngle;
         }
 
-        private void MostraResultat(Resultat millorResultatPerAquestAngle, Resultat resultatEnProva, float i)
+        private void MostraResultat(Resultat millorResultatPerAquestAngle, Resultat resultatEnProva, double i)
         {
             var esMillor = MilloremElResultat(millorResultatPerAquestAngle, resultatEnProva) ? '*' : ' ';
             var angleEnGraus = Constants.RadianToDegreeCoeficient * resultatEnProva.Angle;
@@ -122,9 +121,9 @@ namespace Parabolic
             return (millorResultatPerAquestAngle.CompareTo(nou) > 0);
         }
 
-        private float AfinarElIncrement(Resultat millorResultat, float incrementAnterior)
+        private double AfinarElIncrement(Resultat millorResultat, double incrementAnterior)
         {
-            return Math.Abs(incrementAnterior) * 0.5F * millorResultat.Sentit;
+            return Math.Abs(incrementAnterior) * 0.5 * millorResultat.Sentit;
         }
 
         private float CalculaNovaVelocitat(float velocitat, float increment)

@@ -7,8 +7,8 @@
     <ProjectGuid>{C5F16CEE-3495-4F0E-A694-3DE95416A594}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Parabolic</RootNamespace>
-    <AssemblyName>ParabolicTools</AssemblyName>
+    <RootNamespace>Parabolic.Tools</RootNamespace>
+    <AssemblyName>Parabolic.Tools</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=4.6.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.4.6.0\lib\net45\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,8 +44,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FloatExtensions.cs" />
+    <Compile Include="Command\AwaitableDelegateCommand.cs" />
+    <Compile Include="Command\DelegateCommand.cs" />
+    <Compile Include="DomainExtensions.cs" />
+    <Compile Include="Command\IAsyncCommand.cs" />
+    <Compile Include="IIoCRegister.cs" />
+    <Compile Include="NumericExtensions.cs" />
+    <Compile Include="ObservableObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

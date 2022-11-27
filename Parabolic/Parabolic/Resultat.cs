@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Parabolic
+namespace Parabolic.Console
 {
     public class Resultat : IComparable<Resultat>
     {
@@ -13,12 +12,12 @@ namespace Parabolic
         const int DistanciaACubrir = 1151000; // distancia a Breda en metres
         private static Calculador calculador = new Calculador();
 
-        public float Angle { get; private set; }
-        public float VelocitatInicial { get; private set; }
-        public float Distancia { get; private set; }
+        public double Angle { get; private set; }
+        public double VelocitatInicial { get; private set; }
+        public double Distancia { get; private set; }
         public int Sentit { get; private set; }
 
-        public Resultat(float angle, float força)
+        public Resultat(double angle, double força)
         {
             Angle = angle;
             VelocitatInicial = força;
@@ -52,7 +51,7 @@ namespace Parabolic
             var roca = new Roca()
             {
                 Posicio = posicioInicial,
-                Velocitat = new Vector3(VelocitatInicial * (float)Math.Cos(Angle), VelocitatInicial * (float)Math.Sin(Angle), 0),
+                Velocitat = new Vector3(VelocitatInicial * Math.Cos(Angle), VelocitatInicial * Math.Sin(Angle), 0),
                 Masa = MasaDeLaRoca
             };
 

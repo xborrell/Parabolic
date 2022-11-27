@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParabolicTests", "Parabolic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParabolicTools", "ParabolicTools\ParabolicTools.csproj", "{C5F16CEE-3495-4F0E-A694-3DE95416A594}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Draw", "Draw\Draw.csproj", "{1C9FD731-225E-4BA5-A361-78F832EE1397}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{C5F16CEE-3495-4F0E-A694-3DE95416A594}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5F16CEE-3495-4F0E-A694-3DE95416A594}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5F16CEE-3495-4F0E-A694-3DE95416A594}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C9FD731-225E-4BA5-A361-78F832EE1397}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C9FD731-225E-4BA5-A361-78F832EE1397}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C9FD731-225E-4BA5-A361-78F832EE1397}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C9FD731-225E-4BA5-A361-78F832EE1397}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

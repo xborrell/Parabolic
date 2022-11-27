@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Numerics;
-using System.Numerics;
 
-namespace Parabolic
+namespace Parabolic.Console
 {
     internal class Calculador
     {
@@ -12,18 +10,20 @@ namespace Parabolic
 
         internal void Throw(Roca roca)
         {
-            float interval = 10F; // segons
-            float temps = interval;
+            int iteracions = 10000;
+            var posicioInicial = roca.Posicio;
+            var velocitatInicial = roca.Velocitat;
 
             do
             {
                 CalcularNovaPosicio(roca);
-                temps -= Constants.FixedDeltaTime;
 
-                if( temps <= 0)
+                if( iteracions-- < 0)
                 {
-                    temps += interval;
+                    roca.Posicio = new Vector3(double.MaxValue, double.MaxValue, double.MaxValue);
+                    return;
                 }
+
 
             } while (roca.Posicio.Length() >= Constants.EarthRadius);
         }
@@ -34,7 +34,7 @@ namespace Parabolic
             var fuerzaGravitatoria = CalcularForçaGravitatoria(roca);
             var aceleracionGravitatoria = fuerzaGravitatoria / roca.Masa;
 
-            roca.Velocitat += aceleracionGravitatoria * Constants.FixedDeltaTime;
+            roca.Velocitat = roca.Velocitat + (aceleracionGravitatoria * Constants.FixedDeltaTime);
             var desplaçament = roca.Velocitat * Constants.FixedDeltaTime;
             roca.Posicio += desplaçament;
         }
@@ -42,13 +42,13 @@ namespace Parabolic
         Vector3 CalcularForçaGravitatoria(Roca roca)
         {
             var gravitationModulus = CalcularAtraccioTerrestre(roca);
-            var gravitationForce = Vector3.Normalize(roca.Posicio);
+            var gravitationForce = roca.Posicio.Normalize();
             gravitationForce = gravitationForce * (gravitationModulus * -1);
 
             return gravitationForce;
         }
 
-        public float CalcularAtraccioTerrestre(Roca roca)
+        public double CalcularAtraccioTerrestre(Roca roca)
         {
             var M = Constants.EarthMass;
             var m = roca.Masa;

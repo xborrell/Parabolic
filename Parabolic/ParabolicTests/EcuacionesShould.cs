@@ -2,6 +2,7 @@
 using Parabolic;
 using System;
 using Xunit;
+using Parabolic.Console;
 
 namespace ParabolicTests
 {
